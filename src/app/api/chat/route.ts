@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { checkTrialStatus } from "@/lib/trial";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 const SYSTEM_PROMPT = `Eres CNC Copilot AI, un asistente experto en mecanizado CNC.
 
 Tienes conocimiento profundo de:
@@ -45,6 +40,13 @@ export async function POST(req: NextRequest) {
     }
 
     const token = authHeader.replace("Bearer ", "");
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { global: { headers: { Authorization: `Bearer ${token}` } } }
+    );
+
     const {
       data: { user },
       error: authError,
@@ -54,14 +56,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
     }
 
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
       .single();
 
     if (!profile) {
-      return NextResponse.json({ error: "Perfil no encontrado" }, { status: 404 });
+      return NextResponse.json(
+        { error: `Perfil no encontrado. ${profileError?.message || ""}` },
+        { status: 404 }
+      );
     }
 
     const trialStatus = checkTrialStatus(profile);
