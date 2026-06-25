@@ -103,8 +103,9 @@ export async function POST(req: NextRequest) {
     });
 
     if (!aiResponse.ok) {
+      const errBody = await aiResponse.text();
       return NextResponse.json(
-        { error: "Error al procesar la consulta" },
+        { error: `Error IA (${aiResponse.status}): ${errBody.slice(0, 200)}` },
         { status: 500 }
       );
     }
