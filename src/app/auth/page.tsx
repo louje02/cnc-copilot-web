@@ -30,17 +30,20 @@ export default function AuthPage() {
         window.location.href = "/demo";
       }
     } else {
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { full_name: fullName },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) {
         setError(error.message);
+      } else if (signUpData.session) {
+        window.location.href = "/demo";
       } else {
-        setSuccess("Cuenta creada. Revisa tu email para confirmar el registro.");
+        setSuccess("Cuenta creada. Revisa tu email para confirmar y acceder a la demo.");
       }
     }
 
