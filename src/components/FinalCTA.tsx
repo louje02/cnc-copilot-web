@@ -16,10 +16,10 @@ export default function FinalCTA() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
-            href="#precios"
+            href="/auth"
             className="px-10 py-4 rounded-xl bg-accent-500 hover:bg-accent-600 text-white font-semibold text-lg transition-all hover:shadow-lg hover:shadow-accent-500/25"
           >
-            Empieza Gratis Ahora
+            Prueba Gratis 7 Días
           </a>
           <a
             href="#contacto"

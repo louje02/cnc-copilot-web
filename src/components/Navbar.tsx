@@ -36,10 +36,10 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="#precios"
+              href="/auth"
               className="px-5 py-2 rounded-lg bg-accent-500 hover:bg-accent-600 text-white text-sm font-medium transition-colors"
             >
-              Empieza Gratis
+              Prueba Gratis
             </a>
           </div>
 
@@ -76,7 +76,7 @@ export default function Navbar() {
             onClick={() => setOpen(false)}
             className="block text-center px-5 py-2 rounded-lg bg-accent-500 text-white font-medium"
           >
-            Empieza Gratis
+            Prueba Gratis
           </a>
         </div>
       )}

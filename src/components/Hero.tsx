@@ -29,10 +29,10 @@ export default function Hero() {
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <a
-                href="#precios"
+                href="/auth"
                 className="px-8 py-4 rounded-xl bg-accent-500 hover:bg-accent-600 text-white font-semibold text-center transition-all hover:shadow-lg hover:shadow-accent-500/25"
               >
-                Empieza Gratis — Sin Tarjeta
+                Prueba Gratis 7 Días
               </a>
               <a
                 href="#demo"
