@@ -1,8 +1,6 @@
 "use client";
 import { useState, type FormEvent } from "react";
 
-const FORMSPREE_ID = "xeebazlb";
-
 export default function Contact() {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -13,13 +11,20 @@ export default function Contact() {
     setSending(true);
     setError(false);
 
-    const data = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = {
+      name: (form.elements.namedItem("name") as HTMLInputElement).value,
+      email: (form.elements.namedItem("email") as HTMLInputElement).value,
+      company: (form.elements.namedItem("company") as HTMLInputElement).value,
+      machines: (form.elements.namedItem("machines") as HTMLSelectElement).value,
+      message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
+    };
 
     try {
-      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+      const res = await fetch("/api/contact", {
         method: "POST",
-        body: data,
-        headers: { Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       });
       if (res.ok) {
         setSent(true);
@@ -73,8 +78,8 @@ export default function Contact() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold mb-2">Mensaje enviado</h3>
-                <p className="text-steel-400">Te contactaremos pronto.</p>
+                <h3 className="text-xl font-bold mb-2">¡Mensaje enviado!</h3>
+                <p className="text-steel-400">Revisa tu email — te hemos enviado acceso a la demo gratuita.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
