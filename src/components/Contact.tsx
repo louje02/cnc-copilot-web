@@ -1,7 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 
-const FORMSPREE_ID = "YOUR_FORMSPREE_ID";
+const FORMSPREE_ID = "xeebazlb";
 
 export default function Contact() {
   const [sent, setSent] = useState(false);
