@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { checkTrialStatus } from "@/lib/trial";
+import { searchKnowledge } from "@/lib/rag";
 
 const SYSTEM_PROMPT = `Eres CNC Copilot AI, un asistente experto en mecanizado CNC.
 
@@ -84,7 +85,18 @@ export async function POST(req: NextRequest) {
 
     const category = classifyQuestion(question);
 
-    // Llamada a OpenAI (reemplazar por Claude API si se prefiere)
+    // Buscar conocimiento relevante en la base de datos
+    let knowledgeContext = "";
+    try {
+      knowledgeContext = await searchKnowledge(question);
+    } catch {
+      // Si falla la búsqueda RAG, continuar sin contexto adicional
+    }
+
+    const systemMessage = knowledgeContext
+      ? `${SYSTEM_PROMPT}\n\n--- DOCUMENTACIÓN TÉCNICA RELEVANTE ---\nUsa la siguiente información de nuestros manuales técnicos para responder. Si la información contradice tu conocimiento general, prioriza los manuales. Cita la fuente cuando uses esta información.\n\n${knowledgeContext}\n--- FIN DE DOCUMENTACIÓN ---`
+      : SYSTEM_PROMPT;
+
     const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -94,7 +106,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: systemMessage },
           { role: "user", content: question },
         ],
         max_tokens: 1500,
@@ -129,6 +141,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       answer,
       category,
+      usedKnowledgeBase: knowledgeContext.length > 0,
       trialStatus: {
         ...trialStatus,
         queriesUsed: trialStatus.queriesUsed + 1,
